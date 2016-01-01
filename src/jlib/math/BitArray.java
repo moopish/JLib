@@ -15,7 +15,10 @@ import java.util.Arrays;
  *     Holds an array of bits. The array of bits
  * is represented by an array of integers and each
  * bit of the integers (unless excess) are used in
- * the representation of the bit array.
+ * the representation of the bit array. This class
+ * is immutable and any calculations like 'and' and
+ * 'or' will return a new instance of the class with
+ * the calculated value.
  * </p>
  *
  * <p><b>NOTE: array indices begin at zero like other arrays</b></p>
