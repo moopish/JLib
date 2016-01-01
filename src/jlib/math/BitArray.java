@@ -1,5 +1,7 @@
 package jlib.math;
 
+import java.util.Arrays;
+
 /**
  * <p><b>
  *     <tt>BitArray</tt> class
@@ -21,7 +23,7 @@ package jlib.math;
  * @author Michael van Dyk
  * @version 1.0
  */
-public final class BitArray {
+public final class BitArray implements Comparable<BitArray> {
 
     /**
      * Each in represents a bit of the array.
@@ -56,6 +58,39 @@ public final class BitArray {
     }
 
     /**
+     *  Creates a new BitArray from a given bit string. If
+     * any of the characters given are neither '0' nor '1'
+     * then an exception is thrown.
+     * @param bit_string the bit string to base the array from
+     */
+    public BitArray(String bit_string) {
+        this(bit_string.length());
+        for (int i=1; i<=length; ++i) {
+            switch (bit_string.charAt(length - i)) {
+                case '0' :
+                    break;
+                case '1' :
+                    set(i - 1);
+                    break;
+                default :
+                    throw new RuntimeException();
+            }
+        }
+    }
+
+    /**
+     *  Returns a new BitArray of the value (this & o)
+     * @param o the other BitArray in the and
+     * @return the new BitArray
+     */
+    public BitArray and(BitArray o) {
+        BitArray ret = new BitArray(length < o.length ? length : o.length);
+        for (int i=0; i<ret.bits.length; ++i)
+            ret.bits[i] = bits[i] & o.bits[i];
+        return (ret);
+    }
+
+    /**
      *  Sets the value at the given index to what
      * value is given.
      * @param index the index to set the value of
@@ -80,6 +115,46 @@ public final class BitArray {
     }
 
     /**
+     *  Compares this BitArray and the other given BitArray
+     * @param o the BitArray to compare with
+     * @return negative, zero, positive if less than, equal, greater than
+     */
+    @Override
+    public int compareTo(BitArray o) {
+        if (length == o.length)
+            for (int i=0; i<bits.length; ++i)
+                if (bits[i] != o.bits[i])
+                    return (bits[i] - o.bits[i]);
+        return (length - o.length);
+    }
+
+    /**
+     *  Creates a new BitArray from a given bit string. If
+     * any of the characters given are neither '0' nor '1'
+     * then an exception is thrown.
+     * @param bit_string the bit string to base the array from
+     * @return the new BitArray from the given bit string
+     */
+    public static BitArray fromBinary(String bit_string) {
+        return (new BitArray(bit_string));
+    }
+
+    //TODO NOT DONE SO COMMENT NOT DONE
+    /**
+     *  Makes BitArray from hex string
+     * @param hex_string the hex string
+     * @return the BitArray
+     */
+    public static BitArray fromHex(String hex_string) {
+        BitArray ret = new BitArray(hex_string.length() * 4);
+
+        for (int i=hex_string.length()-1; i>=0; --i) {
+            //TODO DO NERD
+        }
+        return (ret);
+    }
+
+    /**
      *  Get the bit value at the given index.
      * If the index is out of range an exception is thrown.
      * @param index the given index
@@ -100,6 +175,24 @@ public final class BitArray {
     }
 
     /**
+     *  Returns a new BitArray of the value (this | o)
+     * @param o the other BitArray in the or
+     * @return the new BitArray
+     */
+    public BitArray or(BitArray o) {
+        BitArray ba;
+        if (length >= o.length) {
+            ba = new BitArray(length);
+            for (int i=0; i<o.bits.length; ++i)
+                ba.bits[i] = bits[i] | o.bits[i];
+            System.arraycopy(bits, o.bits.length, ba.bits, o.bits.length, bits.length - o.bits.length);
+        } else {
+            ba = o.or(this);
+        }
+        return (ba);
+    }
+
+    /**
      *  Sets the bit at the given index to 1/true
      * @param index the index to set
      */
@@ -109,6 +202,28 @@ public final class BitArray {
         bits[index / Integer.SIZE] = Functions.bit_set(bits[index / Integer.SIZE], index % Integer.SIZE);
     }
 
+    /**
+     *  Returns a new BitArray of the value (this ^ o)
+     * @param o the other BitArray in the xor
+     * @return the new BitArray
+     */
+    public BitArray xor(BitArray o) {
+        BitArray ba;
+        if (length >= o.length) {
+            ba = new BitArray(length);
+            for (int i=0; i<o.bits.length; ++i)
+                ba.bits[i] = bits[i] ^ o.bits[i];
+            System.arraycopy(bits, o.bits.length, ba.bits, o.bits.length, bits.length - o.bits.length);
+        } else {
+            ba = o.or(this);
+        }
+        return (ba);
+    }
+
+    /**
+     * Gets the bit string of the BitArray
+     * @return the bit string of the BitArray
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("");
