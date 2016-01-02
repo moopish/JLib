@@ -1,7 +1,5 @@
 package jlib.math;
 
-import java.util.Arrays;
-
 /**
  * <p><b>
  *     <tt>BitArray</tt> class
@@ -132,6 +130,30 @@ public final class BitArray implements Comparable<BitArray> {
     }
 
     /**
+     *  Creates a new array with the given array added on to the end of the
+     * former array. this has o added to the end.
+     *     //TODO not done
+     * @param o the array to concatenate to the end
+     * @return the concatenated array
+     */
+    public BitArray concat(BitArray o) {
+        BitArray ret = new BitArray(length + o.length);
+        //TODO
+        return (ret);
+    }
+
+    /**
+     *  Makes a deep copy of the BitArray that is equal
+     * to the BitArray this method is called upon.
+     * @return The copy of the BitArray
+     */
+    public BitArray copy() {
+        BitArray ret = new BitArray(length);
+        System.arraycopy(bits, 0, ret.bits, 0,bits.length);
+        return (ret);
+    }
+
+    /**
      *  Creates a new BitArray from a given bit string. If
      * any of the characters given are neither '0' nor '1'
      * then an exception is thrown.
@@ -169,12 +191,57 @@ public final class BitArray implements Comparable<BitArray> {
         return (Functions.bit_get(bits[index / Integer.SIZE], index % Integer.SIZE));
     }
 
+    //TODO finish not done, does not work
+    public BitArray leftShift(int n) {
+        if (n < 0)
+            return (rightShift(-n));
+        if (n == 0)
+            return (this);
+        BitArray ret = new BitArray(n + length);
+        System.arraycopy(bits, 0, ret.bits, (int)Math.ceil((ret.length - length)/(double)Integer.SIZE), bits.length);
+
+        int dif = ((n + length) % Integer.SIZE) - (length % Integer.SIZE);
+
+        if (dif < 0) {
+            for (int i=0; i<bits.length; ++i){
+                //TODO
+            }
+        } else if (dif > 0) {
+            //TODO NOT DONE
+            int op = Integer.SIZE - dif;
+            for (int i=1; i<bits.length; ++i){
+                ret.bits[ret.bits.length - i] = (bits[bits.length - i] << dif) | (bits[bits.length - i - 1] >>> op);
+            }
+            ret.bits[ret.bits.length - bits.length] = (bits[0] << dif);
+        }
+        return (ret);
+    }
+
+    //TODO finish same as leftShift
+    public BitArray rightShift(int n) {
+        return (this);
+    }
+
     /**
      * The number of bits stored in the array
      * @return the number of bits in the array
      */
     public int length() {
         return (length);
+    }
+
+    /**
+     *  Returns a negated version of the BitArray. Each
+     * bit is the opposite of what it is in the original
+     * BirArray.
+     * @return the negated BitArray
+     */
+    public BitArray negate() {
+        BitArray ret = new BitArray(length);
+        for (int i=0; i<bits.length-1; ++i)
+            ret.bits[i] = ~bits[i];
+        ret.bits[bits.length-1] = ~(bits[bits.length-1] & (~0 << (length & Integer.SIZE)));
+        return (ret);
     }
 
     /**
