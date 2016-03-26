@@ -112,7 +112,7 @@ public final class BitArray implements Comparable<BitArray> {
     public void clear(int index) {
         if (index >= length || index < 0)
             throw new RuntimeException();
-        bits[index / Integer.SIZE] = Functions.bit_clr(bits[index / Integer.SIZE], index % Integer.SIZE);
+        bits[index / Integer.SIZE] = bits[index / Integer.SIZE] & ~(1 << (index % Integer.SIZE));
     }
 
     /**
@@ -122,10 +122,12 @@ public final class BitArray implements Comparable<BitArray> {
      */
     @Override
     public int compareTo(BitArray o) {
-        if (length == o.length)
-            for (int i=0; i<bits.length; ++i)
+        if (length == o.length) {
+            for (int i = 0; i < bits.length; ++i)
                 if (bits[i] != o.bits[i])
                     return (bits[i] - o.bits[i]);
+            return (0);
+        }
         return (length - o.length);
     }
 
@@ -149,8 +151,12 @@ public final class BitArray implements Comparable<BitArray> {
      */
     public BitArray copy() {
         BitArray ret = new BitArray(length);
-        System.arraycopy(bits, 0, ret.bits, 0,bits.length);
+        System.arraycopy(bits, 0, ret.bits, 0, bits.length);
         return (ret);
+    }
+
+    public boolean equals(BitArray o) {
+        return (compareTo(o) == 0);
     }
 
     /**
@@ -188,7 +194,7 @@ public final class BitArray implements Comparable<BitArray> {
     public boolean get(int index) {
         if (index >= length || index < 0)
             throw new RuntimeException();
-        return (Functions.bit_get(bits[index / Integer.SIZE], index % Integer.SIZE));
+        return (((bits[index / Integer.SIZE] & (1 << (index % Integer.SIZE))) >>> (index % Integer.SIZE)) == 1);
     }
 
     //TODO finish not done, does not work
@@ -212,14 +218,49 @@ public final class BitArray implements Comparable<BitArray> {
             for (int i=1; i<bits.length; ++i){
                 ret.bits[ret.bits.length - i] = (bits[bits.length - i] << dif) | (bits[bits.length - i - 1] >>> op);
             }
-            ret.bits[ret.bits.length - bits.length] = (bits[0] << dif);
+            //ret.bits[ret.bits.length - bits.length] = (bits[0] << dif);
         }
         return (ret);
     }
 
     //TODO finish same as leftShift
     public BitArray rightShift(int n) {
-        return (this);
+        if (n < 0)
+            return (leftShift(-n));
+        if (n == 0)
+            return (this);
+        if (length - n <= 0)
+            return (new BitArray(1));
+        BitArray ret = new BitArray(length - n);
+        System.arraycopy(bits, bits.length - ret.bits.length, ret.bits, 0, ret.bits.length);
+
+        int dif = (length % Integer.SIZE) - (bits.length % Integer.SIZE);
+        if (dif < 0) {
+
+        } else if (dif > 0) {
+
+        }
+
+        return (ret);
+    }
+
+    public BitArray rightShiftSigned(int n) {
+        if (n < 0)
+            return (leftShift(-n));
+        if (n == 0)
+            return (this);
+        if (length - n <= 0)
+            return ((get(length - 1)) ? new BitArray(length).negate() : new BitArray(length));
+
+        BitArray ret = new BitArray(length);
+        if (get(length - 1)) {
+            int end = (length + n - length)/Integer.SIZE;
+            for (int i=1; i<=end; ++i) {
+
+            }
+        }
+
+        return (null);
     }
 
     /**
@@ -269,7 +310,29 @@ public final class BitArray implements Comparable<BitArray> {
     public void set(int index) {
         if (index >= length || index < 0)
             throw new RuntimeException();
-        bits[index / Integer.SIZE] = Functions.bit_set(bits[index / Integer.SIZE], index % Integer.SIZE);
+        bits[index / Integer.SIZE] = bits[index / Integer.SIZE] | (1 << (index % Integer.SIZE));
+    }
+
+    public byte[] toBytes() {
+        byte[] bytes = new byte[(int)Math.ceil(length/Byte.SIZE)];
+
+        for (int i=0; i<bytes.length; ++i) {
+
+        }
+
+        return (bytes);
+    }
+
+    /**
+     * Gets the bit string of the BitArray
+     * @return the bit string of the BitArray
+     */
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("");
+        for (int i=length-1; i>=0; --i)
+            sb.append(get(i) ? '1' : '0');
+        return (sb.toString());
     }
 
     /**
@@ -288,17 +351,5 @@ public final class BitArray implements Comparable<BitArray> {
             ba = o.or(this);
         }
         return (ba);
-    }
-
-    /**
-     * Gets the bit string of the BitArray
-     * @return the bit string of the BitArray
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("");
-        for (int i=length-1; i>=0; --i)
-            sb.append(get(i) ? '1' : '0');
-        return (sb.toString());
     }
 }

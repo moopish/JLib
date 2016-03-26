@@ -19,17 +19,20 @@ public class FrequencyMap<T> {
         add(items);
     }
 
+    public final void add(T item) {
+        Integer item_count = map.get(item);
+        if (item_count == null) {
+            map.put(item, 1);
+        } else {
+            map.put(item, item_count + 1);
+        }
+    }
+
     @SafeVarargs
     public final void add(T... items) {
         count += items.length;
-        for (T item : items) {
-            Integer item_count = map.get(item);
-            if (item_count == null) {
-                map.put(item, 1);
-            } else {
-                map.put(item, item_count + 1);
-            }
-        }
+        for (T item : items)
+            add(item);
     }
 
     public double frequency(T value) {

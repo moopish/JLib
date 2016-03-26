@@ -15,7 +15,9 @@ public class Huffman implements Encoder {
 
     @Override
     public byte[] encode(byte[] text) {
-        FrequencyMap map;
+        FrequencyMap<Byte> map = new FrequencyMap<>();
+        for (byte b : text)
+            map.add(b);
         return new byte[0];
     }
 }

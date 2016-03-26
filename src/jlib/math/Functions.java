@@ -1,5 +1,7 @@
 package jlib.math;
 
+import com.sun.istack.internal.NotNull;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
@@ -86,9 +88,20 @@ public final class Functions {
         return (true);
     }
 
-    //TODO finish
+    /**
+     * Checks if a number is a palindrome in base 2.
+     * A palindrome if the same both forward and backwards.
+     * 1001001 is a binary palindrome.
+     * @param n the number to check
+     * @return if the number is a palindrome in base 2
+     */
     public static boolean binary_palindrome(BigInteger n) {
-        return (false);
+        int len = n.bitLength();
+        int half = len/2;
+        for (int i=0; i<half; ++i)
+            if (n.testBit(i) != n.testBit(len - i - 1))
+                return (false);
+        return (true);
     }
 
     /**
@@ -358,6 +371,13 @@ public final class Functions {
         }
     }
 
+    /**
+     *  Finds the greatest common denominator of the two
+     * given values.
+     * @param a one of the values
+     * @param b the other value
+     * @return the greatest common denominator
+     */
     public static int gcd(int a, int b) {
         while (a != 0) {
             int temp = b % a;
@@ -367,6 +387,31 @@ public final class Functions {
         return (b);
     }
 
+    /**
+     * TODO UNTESTED
+     *  Finds the greatest common denominator of the given values in more of a list format.
+     * Works as gcd(a, b1, ..., bn) = gcd(a, gcd(b1, ..., bn)).
+     * @param a The first value to check, used as the initial gcd
+     * @param bs the other values to check
+     * @return the greatest common denominator of all given values.
+     */
+    public static int gcd(int a, @NotNull int... bs) {
+        int gcd = a;
+        for (int b : bs) {
+            if (gcd <= 1)
+                break;
+            gcd = gcd(gcd, b);
+        }
+        return (gcd);
+    }
+
+    /**
+     *  Finds the greatest common denominator of the two
+     * given values.
+     * @param a one of the values
+     * @param b the other value
+     * @return the greatest common denominator
+     */
     public static BigInteger gcd(BigInteger a, BigInteger b) {
         return (a.gcd(b));
     }
@@ -403,18 +448,41 @@ public final class Functions {
         return (b ? 1 : 0);
     }
 
+    /**
+     *  Gets the least common multiple of the two given values.
+     * @param a one of the values
+     * @param b the other value
+     * @return the least common multiple
+     */
     public static int lcm(int a, int b) {
         return (a * b / gcd(a, b));
     }
 
+    /**
+     *  Gets the least common multiple of the two given values.
+     * @param a one of the values
+     * @param b the other value
+     * @return the least common multiple
+     */
     public static BigInteger lcm(BigInteger a, BigInteger b) {
         return (a.multiply(b).divide(a.gcd(b)));
     }
 
+    /**
+     *  Finds the logarithm of a given value for the given base.
+     * @param a the value to find the logarithm of
+     * @param base the base to get the logarithm of
+     * @return the logarithm
+     */
     public static double log(double a, double base) {
         return (Math.log(a)/Math.log(base));
     }
 
+    /**
+     *  Finds the logarithm of the given value base 2.
+     * @param a the value
+     * @return
+     */
     public static double log2(double a) {
         return (log(a, 2));
     }
@@ -431,6 +499,12 @@ public final class Functions {
         return (n.multiply(n.multiply(THREE).subtract(TWO)));
     }
 
+    /**
+     *  Checks if the given value is palindromic, is
+     * the same both ways, in base 10.
+     * @param n the number to check
+     * @return whether or not the number is palindromic
+     */
     public static boolean palindromic(int n) {
         int top = (int)Math.log10(n) + 1;
         int[] dig = new int[top];
@@ -518,6 +592,19 @@ public final class Functions {
         root = Math.sqrt(root)/(2 * a);
         double boa = -b/(2*a);
         return (new double[]{boa - root, boa + root});
+    }
+
+    /**
+     *  Creates a randomly generated bit string with the
+     * given length.
+     * @param len the length of the bit string to make
+     * @return the random bit string
+     */
+    public static String rand_bit_string(int len) {
+        StringBuilder sb = new StringBuilder("");
+        for (int i=0; i<len; ++i)
+            sb.append((int)(Math.random() * 2) == 1 ? '1' : '0');
+        return (sb.toString());
     }
 
     /**
@@ -699,8 +786,14 @@ public final class Functions {
         return (((limit + n) * max)/2);
     }
 
-    // TODO http://www.geeksforgeeks.org/eulers-totient-function/
-    // TODO comment
+    /**
+     *  Euler's totient function. Gives back the number of values
+     * less than n that are relatively prime to n.
+     *
+     *  ref: http://www.geeksforgeeks.org/eulers-totient-function/
+     * @param n the value to get the totient of
+     * @return the totient of n
+     */
     public static int totient(int n) {
         int result = n;
         int root = (int)Math.sqrt(n);
@@ -763,6 +856,7 @@ public final class Functions {
 
     public static void main(String[] args) {
 
+        System.out.println(palindromic(2145412));
     }
 
 }
